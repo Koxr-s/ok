@@ -42,134 +42,15 @@
         filter: saturate(1.1) contrast(1.05);
       }
 
-      .play-button {
-        position: absolute;
-        z-index: 2;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        width: 128px;
-        height: 128px;
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        border-radius: 999px;
-        background: rgba(5, 5, 8, 0.55);
-        color: #fff;
-        font-size: 40px;
-        cursor: pointer;
-        backdrop-filter: blur(8px);
-        transition: transform 0.3s ease, background 0.3s ease, opacity 0.3s ease;
-        animation: pulse 2.2s ease-in-out infinite;
-      }
-
-      .play-button:hover {
-        background: rgba(10, 10, 14, 0.75);
-        transform: scale(1.05);
-      }
-
-      .play-button.is-hidden {
-        opacity: 0;
-        pointer-events: none;
-        transform: scale(0.9);
-      }
-
-      @keyframes pulse {
-        0%,
-        100% {
-          box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.35);
-        }
-        50% {
-          box-shadow: 0 0 25px 8px rgba(255, 255, 255, 0.1);
-        }
-      }
     </style>
   </head>
   <body>
     <div class="video-wrapper">
-      <button class="play-button" type="button" aria-label="Play video">▶</button>
-      <video id="video" playsinline autoplay>
+      <video id="video" playsinline autoplay muted loop>
         <source src="videoplayback.mp4" type="video/mp4" />
         Your browser does not support the video tag.
       </video>
     </div>
 
-    <script>
-      const video = document.getElementById("video");
-      const playButton = document.querySelector(".play-button");
-
-      const requestFullscreen = () => {
-        if (document.fullscreenElement || document.webkitFullscreenElement) {
-          return;
-        }
-
-        if (video.requestFullscreen) {
-          video.requestFullscreen();
-        } else if (video.webkitRequestFullscreen) {
-          video.webkitRequestFullscreen();
-        } else if (video.msRequestFullscreen) {
-          video.msRequestFullscreen();
-        }
-      };
-
-      const updateButton = () => {
-        if (video.paused) {
-          playButton.classList.remove("is-hidden");
-          playButton.textContent = "▶";
-          playButton.setAttribute("aria-label", "Play video");
-        } else {
-          playButton.classList.add("is-hidden");
-          playButton.textContent = "❚❚";
-          playButton.setAttribute("aria-label", "Pause video");
-        }
-      };
-
-      const togglePlayback = () => {
-        if (video.paused) {
-          video.play();
-          requestFullscreen();
-        } else {
-          video.pause();
-        }
-        updateButton();
-      };
-
-      const tryAutoplay = async () => {
-        video.autoplay = true;
-        video.muted = false;
-        video.volume = 1;
-        try {
-          await video.play();
-          requestFullscreen();
-        } catch (error) {
-          // Autoplay with sound can be blocked; leave the play button visible.
-        }
-        updateButton();
-      };
-
-      const resumeWithSound = async () => {
-        if (!video.paused) {
-          return;
-        }
-        video.muted = false;
-        video.volume = 1;
-        try {
-          await video.play();
-          requestFullscreen();
-        } catch (error) {
-          // Ignore further autoplay errors.
-        }
-        updateButton();
-      };
-
-      window.addEventListener("load", tryAutoplay);
-      document.addEventListener("pointerdown", resumeWithSound, { once: true });
-
-      playButton.addEventListener("click", togglePlayback);
-      video.addEventListener("click", togglePlayback);
-
-      video.addEventListener("play", updateButton);
-      video.addEventListener("pause", updateButton);
-      document.addEventListener("fullscreenchange", updateButton);
-      document.addEventListener("webkitfullscreenchange", updateButton);
-    </script>
   </body>
 </html>
