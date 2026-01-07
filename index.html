@@ -263,11 +263,15 @@
       let cursorY = window.innerHeight / 2;
       const cursorHotspotX = 2;
       const cursorHotspotY = 2;
-      const glowRadius = 20;
+      const cursorWidth = 32;
+      const cursorHeight = 48;
+      const glowSize = 40;
 
       const updateCursor = () => {
         cursor.style.transform = `translate(${cursorX - cursorHotspotX}px, ${cursorY - cursorHotspotY}px)`;
-        cursorGlow.style.transform = `translate(${cursorX - glowRadius}px, ${cursorY - glowRadius}px)`;
+        cursorGlow.style.transform = `translate(${cursorX - cursorHotspotX + cursorWidth / 2 - glowSize / 2}px, ${
+          cursorY - cursorHotspotY + cursorHeight / 2 - glowSize / 2
+        }px)`;
         requestAnimationFrame(updateCursor);
       };
 
