@@ -23,6 +23,7 @@
         height: 100%;
         background: #040405;
         font-family: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
+        cursor: none;
       }
 
       .video-wrapper {
@@ -168,6 +169,86 @@
         pointer-events: auto;
       }
 
+      .soundbar__toggle {
+        border: 1px solid rgba(255, 255, 255, 0.35);
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.16), rgba(120, 135, 255, 0.18));
+        color: #f5f5f7;
+        padding: 8px 16px;
+        border-radius: 999px;
+        font-size: 11px;
+        letter-spacing: 0.3em;
+        text-transform: uppercase;
+        cursor: pointer;
+        box-shadow: 0 0 18px rgba(120, 135, 255, 0.3), 0 0 40px rgba(65, 75, 160, 0.3);
+        transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+      }
+
+      .soundbar__toggle:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 0 24px rgba(155, 165, 255, 0.4), 0 0 44px rgba(80, 90, 180, 0.35);
+      }
+
+      .soundbar__toggle:active {
+        transform: translateY(0);
+        box-shadow: 0 0 16px rgba(120, 135, 255, 0.3);
+      }
+
+      .custom-cursor,
+      .custom-cursor__glow {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        pointer-events: none;
+        z-index: 5;
+        opacity: 0;
+        transition: opacity 0.2s ease;
+      }
+
+      .custom-cursor {
+        border: 1px solid rgba(255, 255, 255, 0.9);
+        background: radial-gradient(circle at 35% 35%, #ffffff, rgba(190, 205, 255, 0.9) 45%, rgba(120, 145, 255, 0.4));
+        box-shadow: 0 0 8px rgba(180, 200, 255, 0.9), 0 0 18px rgba(115, 135, 255, 0.8);
+        mix-blend-mode: screen;
+      }
+
+      .custom-cursor__glow {
+        width: 80px;
+        height: 80px;
+        background: radial-gradient(circle, rgba(120, 145, 255, 0.5), rgba(50, 65, 140, 0) 70%);
+        filter: blur(8px);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        mix-blend-mode: screen;
+      }
+
+      body.cursor-ready .custom-cursor,
+      body.cursor-ready .custom-cursor__glow {
+        opacity: 1;
+      }
+
+      body.cursor-glow-hidden .custom-cursor__glow {
+        opacity: 0;
+      }
+
+      body.cursor-clicking .custom-cursor {
+        transform: translate(-50%, -50%) scale(0.85);
+        box-shadow: 0 0 6px rgba(180, 200, 255, 0.9), 0 0 14px rgba(115, 135, 255, 0.8);
+      }
+
+      @media (hover: none) {
+        body {
+          cursor: auto;
+        }
+
+        .custom-cursor,
+        .custom-cursor__glow {
+          display: none;
+        }
+      }
+
     </style>
   </head>
   <body>
@@ -190,14 +271,42 @@
           value="0.3"
           aria-label="Volume"
         />
+        <button class="soundbar__toggle" type="button" aria-pressed="false">Pause</button>
       </div>
     </div>
+    <div class="custom-cursor__glow" aria-hidden="true"></div>
+    <div class="custom-cursor" aria-hidden="true"></div>
 
     <script>
       const video = document.getElementById("video");
       const wrapper = document.querySelector(".video-wrapper");
       const button = document.querySelector(".begin-button");
       const volumeSlider = document.querySelector(".soundbar__slider");
+      const toggleButton = document.querySelector(".soundbar__toggle");
+      const cursor = document.querySelector(".custom-cursor");
+      const cursorGlow = document.querySelector(".custom-cursor__glow");
+
+      let cursorX = window.innerWidth / 2;
+      let cursorY = window.innerHeight / 2;
+
+      const updateCursor = () => {
+        cursor.style.transform = `translate(${cursorX - 9}px, ${cursorY - 9}px)`;
+        cursorGlow.style.transform = `translate(${cursorX - 40}px, ${cursorY - 40}px)`;
+        requestAnimationFrame(updateCursor);
+      };
+
+      const handlePointerMove = (event) => {
+        cursorX = event.clientX;
+        cursorY = event.clientY;
+        if (!document.body.classList.contains("cursor-ready")) {
+          document.body.classList.add("cursor-ready");
+        }
+      };
+
+      window.addEventListener("pointermove", handlePointerMove);
+      window.addEventListener("pointerdown", () => document.body.classList.add("cursor-clicking"));
+      window.addEventListener("pointerup", () => document.body.classList.remove("cursor-clicking"));
+      updateCursor();
 
       const startPlayback = async () => {
         video.muted = false;
@@ -207,12 +316,27 @@
           video.currentTime = 1.45;
           await video.play();
           wrapper.classList.add("is-playing");
+          document.body.classList.add("cursor-glow-hidden");
+          toggleButton.textContent = "Pause";
+          toggleButton.setAttribute("aria-pressed", "false");
         } catch (error) {
           // If playback fails, keep the overlay visible.
         }
       };
 
       button.addEventListener("click", startPlayback);
+
+      toggleButton.addEventListener("click", async () => {
+        if (video.paused) {
+          await video.play();
+          toggleButton.textContent = "Pause";
+          toggleButton.setAttribute("aria-pressed", "false");
+        } else {
+          video.pause();
+          toggleButton.textContent = "Play";
+          toggleButton.setAttribute("aria-pressed", "true");
+        }
+      });
 
       volumeSlider.addEventListener("input", (event) => {
         const value = Number(event.target.value);
