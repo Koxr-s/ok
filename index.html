@@ -191,8 +191,8 @@
       }
 
       .custom-cursor__glow {
-        width: 160px;
-        height: 160px;
+        width: 80px;
+        height: 80px;
         background: radial-gradient(circle, rgba(120, 145, 255, 0.5), rgba(50, 65, 140, 0) 70%);
         filter: blur(8px);
         opacity: 0;
@@ -268,7 +268,7 @@
         glowY += dy * 0.12;
 
         cursor.style.transform = `translate(${cursorX - 9}px, ${cursorY - 9}px)`;
-        cursorGlow.style.transform = `translate(${glowX - 80}px, ${glowY - 80}px)`;
+        cursorGlow.style.transform = `translate(${glowX - 40}px, ${glowY - 40}px)`;
         requestAnimationFrame(updateCursor);
       };
 
