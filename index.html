@@ -82,27 +82,22 @@
         font-size: 20px;
         letter-spacing: 0.4em;
         text-transform: uppercase;
-        padding: 18px 56px;
-        border-radius: 999px;
-        border: 1px solid rgba(255, 255, 255, 0.35);
-        background: linear-gradient(135deg, rgba(255, 255, 255, 0.18), rgba(120, 135, 255, 0.15));
         color: #f5f5f7;
         cursor: none;
-        box-shadow: 0 0 24px rgba(120, 135, 255, 0.35), 0 0 48px rgba(65, 75, 160, 0.3);
         font-family: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
-        transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+        text-shadow: 0 0 16px rgba(120, 135, 255, 0.6), 0 0 32px rgba(65, 75, 160, 0.5);
+        transition: transform 0.2s ease, text-shadow 0.2s ease;
         user-select: none;
       }
 
       .begin-prompt:hover {
         transform: translateY(-2px);
-        box-shadow: 0 0 28px rgba(155, 165, 255, 0.45), 0 0 60px rgba(80, 90, 180, 0.45);
-        background: linear-gradient(135deg, rgba(255, 255, 255, 0.22), rgba(145, 160, 255, 0.25));
+        text-shadow: 0 0 20px rgba(155, 165, 255, 0.7), 0 0 40px rgba(80, 90, 180, 0.6);
       }
 
       .begin-prompt:active {
         transform: translateY(0);
-        box-shadow: 0 0 20px rgba(120, 135, 255, 0.35);
+        text-shadow: 0 0 12px rgba(120, 135, 255, 0.55), 0 0 24px rgba(65, 75, 160, 0.4);
       }
 
       .video-wrapper.is-playing .begin-overlay {
